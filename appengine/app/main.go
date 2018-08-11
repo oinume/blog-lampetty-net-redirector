@@ -35,6 +35,7 @@ func root(w http.ResponseWriter, r *http.Request) {
 func archives(w http.ResponseWriter, r *http.Request) {
 	re := regexp.MustCompile(`^/blog_ja/index.php/archives/([0-9]+)$`)
 	matches := re.FindStringSubmatch(r.URL.Path)
+	panic(matches[0])
 	if len(matches) > 1 {
 		http.Redirect(w, r, fmt.Sprintf("%s/entry/wp/%s", urlPrefix, matches[1]), http.StatusMovedPermanently)
 		return

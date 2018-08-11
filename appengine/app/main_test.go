@@ -26,17 +26,37 @@ func TestRoot(t *testing.T) {
 		{
 			path:       "/",
 			statusCode: http.StatusMovedPermanently,
-			location:   "https://oinume.hatenablog.com/",
+			location:   urlPrefix + "/",
 		},
 		{
 			path:       "/tech/",
 			statusCode: http.StatusMovedPermanently,
-			location:   "https://oinume.hatenablog.com/",
+			location:   urlPrefix + "/",
 		},
 		{
 			path:       "/tech/index.php/feed?q=dummy",
 			statusCode: http.StatusMovedPermanently,
-			location:   "https://oinume.hatenablog.com/rss",
+			location:   urlPrefix + "/rss",
+		},
+		{
+			path:       "/blog_ja",
+			statusCode: http.StatusMovedPermanently,
+			location:   urlPrefix + "/",
+		},
+		{
+			path:       "/blog_ja/index.php/feed",
+			statusCode: http.StatusMovedPermanently,
+			location:   urlPrefix + "/rss",
+		},
+		{
+			path:       "/blog_ja/index.php/archives/391",
+			statusCode: http.StatusMovedPermanently,
+			location:   urlPrefix + "/entry/wp/391",
+		},
+		{
+			path:       "/blog_ja/index.php/archives/category/Perl",
+			statusCode: http.StatusMovedPermanently,
+			location:   urlPrefix + "/category/Perl",
 		},
 	}
 
