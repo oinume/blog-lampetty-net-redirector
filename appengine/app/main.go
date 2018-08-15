@@ -10,53 +10,35 @@ import (
 
 const urlPrefix = "https://oinume.hatenablog.com"
 
+var (
+	archivesRe = regexp.MustCompile(`^/blog_ja/index.php/archives/([0-9]+)$`)
+	categoryRe = regexp.MustCompile(`^/blog_ja/index.php/archives/category/(.+)$`)
+	feedRe     = regexp.MustCompile(`^/blog_ja/index.php/feed`)
+	techFeedRe = regexp.MustCompile(`^/tech/index.php/feed`)
+)
+
 func main() {
-	mux := newMux()
-	http.Handle("/", mux)
+	http.Handle("/", newMux())
 	appengine.Main()
 }
 
 func newMux() *http.ServeMux {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/blog_ja/index.php/archives/category", category)
-	mux.HandleFunc("/blog_ja/index.php/archives", archives)
-	mux.HandleFunc("/blog_ja/index.php/feed", feed)
-	mux.HandleFunc("/blog_ja", root)
-	mux.HandleFunc("/tech/index.php/feed", feed)
-	mux.HandleFunc("/tech", root)
-	mux.HandleFunc("/", root)
+	mux.HandleFunc("/", handle)
 	return mux
 }
 
-func root(w http.ResponseWriter, r *http.Request) {
-	redirectToRoot(w, r)
-}
-
-func archives(w http.ResponseWriter, r *http.Request) {
-	re := regexp.MustCompile(`^/blog_ja/index.php/archives/([0-9]+)$`)
-	matches := re.FindStringSubmatch(r.URL.Path)
-	panic(matches[0])
-	if len(matches) > 1 {
-		http.Redirect(w, r, fmt.Sprintf("%s/entry/wp/%s", urlPrefix, matches[1]), http.StatusMovedPermanently)
-		return
+func handle(w http.ResponseWriter, r *http.Request) {
+	path := r.URL.Path
+	if m := archivesRe.FindStringSubmatch(path); len(m) > 1 {
+		http.Redirect(w, r, fmt.Sprintf("%s/entry/wp/%s", urlPrefix, m[1]), http.StatusMovedPermanently)
+	} else if m := categoryRe.FindStringSubmatch(path); len(m) > 1 {
+		http.Redirect(w, r, fmt.Sprintf("%s/category/%s", urlPrefix, m[1]), http.StatusMovedPermanently)
+	} else if m := feedRe.FindStringSubmatch(path); len(m) > 0 {
+		http.Redirect(w, r, fmt.Sprintf("%s/rss", urlPrefix), http.StatusMovedPermanently)
+	} else if m := techFeedRe.FindStringSubmatch(path); len(m) > 0 {
+		http.Redirect(w, r, fmt.Sprintf("%s/rss", urlPrefix), http.StatusMovedPermanently)
+	} else {
+		http.Redirect(w, r, urlPrefix+"/", http.StatusMovedPermanently)
 	}
-	redirectToRoot(w, r)
-}
-
-func category(w http.ResponseWriter, r *http.Request) {
-	re := regexp.MustCompile(`^/blog_ja/index.php/archives/category/(.+)$`)
-	matches := re.FindStringSubmatch(r.URL.Path)
-	if len(matches) > 1 {
-		http.Redirect(w, r, fmt.Sprintf("%s/category/%s", urlPrefix, matches[1]), http.StatusMovedPermanently)
-		return
-	}
-	redirectToRoot(w, r)
-}
-
-func feed(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, fmt.Sprintf("%s/rss", urlPrefix), http.StatusMovedPermanently)
-}
-
-func redirectToRoot(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, urlPrefix+"/", http.StatusMovedPermanently)
 }
