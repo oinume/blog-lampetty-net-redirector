@@ -18,7 +18,7 @@
   revision = "f9ce57c11b242f0f1599cf25c89d8cb02c45295a"
 
 [[projects]]
-  digest = "1:7cba2f7dcbf28654c8847e3e030c0fd64c02e03306c61780cf8fa9ff7fa89d80"
+  digest = "1:ad8af9dad7e35c508f73dd4289de9a73610b1b8344d7d5315d9877fa381a3550"
   name = "google.golang.org/appengine"
   packages = [
     ".",
@@ -29,6 +29,7 @@
     "internal/log",
     "internal/modules",
     "internal/remote_api",
+    "log",
   ]
   pruneopts = "UT"
   revision = "b1f26356af11148e710935ed1ac8a7f5702c7612"
@@ -37,6 +38,9 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  input-imports = ["google.golang.org/appengine"]
+  input-imports = [
+    "google.golang.org/appengine",
+    "google.golang.org/appengine/log",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1
