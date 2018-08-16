@@ -66,12 +66,12 @@ func TestRoot(t *testing.T) {
 		},
 	}
 	for _, test := range tests {
+		t.Logf("path = %v", test.path)
 		resp, err := client.Get(server.URL + test.path)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t.Logf("path = %v", test.path)
 		if got, want := resp.StatusCode, http.StatusMovedPermanently; got != want {
 			t.Errorf("unexpected StatusCode: got=%v, want=%v\n", got, want)
 		}
