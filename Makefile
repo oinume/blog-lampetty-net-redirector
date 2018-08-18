@@ -1,5 +1,6 @@
 GCP_PROJECT = blog-lampetty-net-redirector
-GOPATH = appengine/gopath/vendor
+GO_TEST ?= go test -v -race -p=1
+GO_TEST_PACKAGES = ./...
 
 .PHONY: run
 run:
@@ -10,8 +11,13 @@ deploy:
 	rm -f `pwd`/appengine/gopath/vendor/src
 	mkdir -p `pwd`/appengine/gopath/vendor
 	ln -s `pwd`/vendor `pwd`/appengine/gopath/vendor/src
-	GOPATH=$(GOPATH) gcloud app deploy appengine/app/app.yaml --project=$(GCP_PROJECT)
+	GOPATH="appengine/gopath/vendor" gcloud app deploy appengine/app/app.yaml --project=$(GCP_PROJECT)
 
 .PHONY: browse
 browse:
 	gcloud app browse --project=$(GCP_PROJECT)
+
+
+.PHONY: test
+test:
+	$(GO_TEST) $(GO_TEST_PACKAGES)
