@@ -24,6 +24,10 @@ jobs:
             echo "" > ~/.gitconfig
             git config --global url."https://github.com".insteadOf git://github.com
             git config --global http.https://gopkg.in.followRedirects true
+      - run:
+          name: "Install dep"
+          command: |
+            go get github.com/golang/dep/cmd/dep
       - restore_cache:
           key: go-dep-{{ checksum "Gopkg.lock" }}
       - run:
