@@ -1,0 +1,58 @@
+version: 2
+jobs:
+  server:
+    working_directory: /go/src/github.com/oinume/blog-lampetty-net-redirector
+    docker:
+      - image: golang:1.10-stretch
+        environment:
+          MYSQL_ALLOW_EMPTY_PASSWORD: true
+          MYSQL_USER: "root"
+          MYSQL_PASSWORD: "lekcije"
+          MYSQL_HOST: "127.0.0.1"
+          MYSQL_PORT: "3306"
+          MYSQL_DATABASE: "lekcije_test"
+          REDIS_URL: "redis://h:@127.0.0.1:6379"
+          E2E_WEB_DRIVER: "PhantomJS"
+          VERSION_HASH: "_version_"
+          NODE_ENV: "test"
+          LEKCIJE_ENV: "test"
+    steps:
+      - checkout
+      - run:
+          name: "Set .gitconfig"
+          command: |
+            echo "" > ~/.gitconfig
+            git config --global url."https://github.com".insteadOf git://github.com
+            git config --global http.https://gopkg.in.followRedirects true
+      - restore_cache:
+          key: go-dep-{{ checksum "Gopkg.lock" }}
+      - run:
+          name: "Install dependencies"
+          command: |
+            if [ ! -e "/go/src/github.com/oinume/blog-lampetty-net-redirector/vendor" ]; then
+              dep ensure
+            fi
+      - save_cache:
+          key: go-dep-{{ checksum "Gopkg.lock" }}
+          paths:
+          - "/go/src/github.com/oinume/blog-lampetty-net-redirector/vendor"
+#      - run:
+#          name: "Run go-lint"
+#          command: make go-lint
+      - run:
+          name: "Run test"
+          command: |
+            make test
+#      - run:
+#          name: "Upload to codecov"
+#          command: |
+#            bash <(curl -s https://codecov.io/bash)
+
+workflows:
+  version: 2
+  build-workflow:
+    jobs:
+    - server:
+        filters:
+          branches:
+            only: /.*/
