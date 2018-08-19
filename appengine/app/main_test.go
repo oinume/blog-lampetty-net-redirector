@@ -58,6 +58,11 @@ func TestRoot(t *testing.T) {
 			statusCode: http.StatusMovedPermanently,
 			location:   urlPrefix + "/category/Perl",
 		},
+		{
+			path:       "/robots.txt",
+			statusCode: http.StatusNotFound,
+			location:   "",
+		},
 	}
 
 	client := &http.Client{
@@ -72,11 +77,13 @@ func TestRoot(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		if got, want := resp.StatusCode, http.StatusMovedPermanently; got != want {
+		if got, want := resp.StatusCode, test.statusCode; got != want {
 			t.Errorf("unexpected StatusCode: got=%v, want=%v\n", got, want)
 		}
-		if got, want := resp.Header.Get("Location"), test.location; got != want {
-			t.Errorf("unexpected Location: got=%v, want=%v\n", got, want)
+		if test.location != "" {
+			if got, want := resp.Header.Get("Location"), test.location; got != want {
+				t.Errorf("unexpected Location: got=%v, want=%v\n", got, want)
+			}
 		}
 		resp.Body.Close()
 	}

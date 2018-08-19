@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"regexp"
 
+	"strings"
+
 	"google.golang.org/appengine"
 )
 
@@ -30,7 +32,9 @@ func newMux() *http.ServeMux {
 
 func handle(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
-	if m := archivesRe.FindStringSubmatch(path); len(m) > 1 {
+	if strings.HasPrefix(path, "/robots.txt") {
+		http.Error(w, "Not found", http.StatusNotFound)
+	} else if m := archivesRe.FindStringSubmatch(path); len(m) > 1 {
 		http.Redirect(w, r, fmt.Sprintf("%s/entry/wp/%s", urlPrefix, m[1]), http.StatusMovedPermanently)
 	} else if m := categoryRe.FindStringSubmatch(path); len(m) > 1 {
 		http.Redirect(w, r, fmt.Sprintf("%s/category/%s", urlPrefix, m[1]), http.StatusMovedPermanently)
