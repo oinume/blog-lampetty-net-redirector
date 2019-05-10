@@ -20,7 +20,7 @@ browse:
 
 .PHONY: build
 build:
-	go build -o server ./cmd/server
+	CGO_ENABLED=0 go build -o server ./cmd/server
 
 .PHONY: test
 test:
@@ -30,3 +30,8 @@ test:
 docker/build:
 	docker build --pull -f Dockerfile \
 	--tag gcr.io/$(GCP_PROJECT_ID)/server:$(IMAGE_TAG) .
+
+.PHONY: gcloud/builds
+gcloud/builds:
+	gcloud builds submit --project $(GCP_PROJECT_ID) \
+  	--tag gcr.io/$(GCP_PROJECT_ID)/blog-lampetty-net-redirector:$(IMAGE_TAG)

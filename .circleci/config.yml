@@ -1,7 +1,7 @@
 version: 2
 
 env: &env
-  GOOGLE_CLOUD_SDK_VERSION: 221.0.0
+  GOOGLE_CLOUD_SDK_VERSION: 244.0.0
   GOOGLE_CLOUD_SDK_DOWNLOAD_PATH: /google-cloud-sdk
   GCP_PROJECT_ID: blog-lampetty-net-redirector
 
@@ -72,13 +72,13 @@ jobs:
               make \
               python
       - restore_cache:
-          key: google-cloud-sdk-221.0.0
+          key: google-cloud-sdk-244.0.0
       - run:
           name: "Install google-cloud-sdk"
           command: |
             ./ci/install-google-cloud-sdk.sh
       - save_cache:
-          key: google-cloud-sdk-221.0.0
+          key: google-cloud-sdk-244.0.0
           paths:
             - /google-cloud-sdk
       - run:
