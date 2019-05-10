@@ -81,7 +81,7 @@ jobs:
           paths:
             - /google-cloud-sdk
       - run:
-          name: "Activate GCP service account" # TODO: common
+          name: "Activate GCP service account"
           command: |
             echo $GCP_SERVICE_ACCOUNT_KEY | base64 -d > ./gcp-service-account-key.json
             gcloud auth activate-service-account --key-file ./gcp-service-account-key.json
@@ -90,25 +90,20 @@ jobs:
           command: |
             TAG=$(echo "${CIRCLE_BRANCH}" | tr '._/' '-' | tr '[:upper:]' '[:lower:]')-"${CIRCLE_BUILD_NUM}"
             echo ${TAG}
-            make docker/build/server IMAGE_TAG=latest
-            docker tag asia.gcr.io/oinume-lekcije/server:latest asia.gcr.io/oinume-lekcije/server:${TAG}
-            gcloud docker -- push asia.gcr.io/oinume-lekcije/server:latest
-            gcloud docker -- push asia.gcr.io/oinume-lekcije/server:${TAG}
+            gcloud builds submit --project ${PROJECT_ID} \
+              --tag gcr.io/${PROJECT_ID}/blog-lampetty-net-redirector:${TAG}
 
 workflows:
   version: 2
   build-workflow:
     jobs:
       - test:
-#          filters:
-#            branches:
-#              only: /.*/
+          filters:
+            branches:
+              only: /.*/
       - deploy-image:
           requires:
             - test
-#          filters:
-#            branches:
-#              only:
-#                - master
-#                - /public-.*/
-
+          filters:
+            branches:
+              only: /.*/
