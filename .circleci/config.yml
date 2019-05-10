@@ -3,6 +3,7 @@ version: 2
 env: &env
   GOOGLE_CLOUD_SDK_VERSION: 221.0.0
   GOOGLE_CLOUD_SDK_DOWNLOAD_PATH: /google-cloud-sdk
+  GCP_PROJECT_ID: blog-lampetty-net-redirector
 
 gitconfig: &gitconfig
   name: "Set .gitconfig"
@@ -90,8 +91,8 @@ jobs:
           command: |
             TAG=$(echo "${CIRCLE_BRANCH}" | tr '._/' '-' | tr '[:upper:]' '[:lower:]')-"${CIRCLE_BUILD_NUM}"
             echo ${TAG}
-            gcloud builds submit --project ${PROJECT_ID} \
-              --tag gcr.io/${PROJECT_ID}/blog-lampetty-net-redirector:${TAG}
+            gcloud builds submit --project ${GCP_PROJECT_ID} \
+              --tag gcr.io/${GCP_PROJECT_ID}/blog-lampetty-net-redirector:${TAG}
 
 workflows:
   version: 2
