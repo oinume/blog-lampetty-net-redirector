@@ -1,4 +1,4 @@
-GCP_PROJECT = blog-lampetty-net-redirector
+GCP_PROJECT_ID = blog-lampetty-net-redirector
 GO_TEST ?= go test -v -race -p=1
 GO_TEST_PACKAGES = ./...
 
@@ -15,7 +15,7 @@ deploy:
 
 .PHONY: browse
 browse:
-	gcloud app browse --project=$(GCP_PROJECT)
+	gcloud app browse --project=$(GCP_PROJECT_ID)
 
 
 .PHONY: build
@@ -25,3 +25,8 @@ build:
 .PHONY: test
 test:
 	$(GO_TEST) $(GO_TEST_PACKAGES)
+
+.PHONY: docker/build
+docker/build:
+	docker build --pull -f Dockerfile \
+	--tag gcr.io/$(GCP_PROJECT_ID)/server:$(IMAGE_TAG) .
