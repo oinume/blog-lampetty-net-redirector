@@ -2,12 +2,11 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
+	"os"
 	"regexp"
-
 	"strings"
-
-	"google.golang.org/appengine"
 )
 
 const urlPrefix = "https://journal.lampetty.net"
@@ -20,8 +19,18 @@ var (
 )
 
 func main() {
-	http.Handle("/", newMux())
-	appengine.Main()
+	if err := run(); err != nil {
+		log.Printf("failed to run: %v\n", err)
+		os.Exit(1)
+	}
+}
+
+func run() error {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "5000"
+	}
+	return http.ListenAndServe(fmt.Sprintf(":%v", port), newMux())
 }
 
 func newMux() *http.ServeMux {

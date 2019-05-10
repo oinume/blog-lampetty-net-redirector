@@ -18,6 +18,10 @@ browse:
 	gcloud app browse --project=$(GCP_PROJECT)
 
 
+.PHONY: build
+build:
+	go build -o server ./cmd/server
+
 .PHONY: test
 test:
 	$(GO_TEST) $(GO_TEST_PACKAGES)
