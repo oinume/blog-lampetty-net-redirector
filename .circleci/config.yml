@@ -89,10 +89,9 @@ jobs:
       - run:
           name: "Deploy docker image to GCR"
           command: |
-            TAG=$(echo "${CIRCLE_BRANCH}" | tr '._/' '-' | tr '[:upper:]' '[:lower:]')-"${CIRCLE_BUILD_NUM}"
-            echo ${TAG}
-            gcloud builds submit --project ${GCP_PROJECT_ID} \
-              --tag gcr.io/${GCP_PROJECT_ID}/blog-lampetty-net-redirector:${TAG}
+            IMAGE_TAG=$(echo "${CIRCLE_BRANCH}" | tr '._/' '-' | tr '[:upper:]' '[:lower:]')-"${CIRCLE_BUILD_NUM}"
+            echo ${IMAGE_TAG}
+            make gcloud/builds IMAGE_TAG=${IMAGE_TAG}
 
 workflows:
   version: 2

@@ -34,4 +34,4 @@ docker/build:
 .PHONY: gcloud/builds
 gcloud/builds:
 	gcloud builds submit --project $(GCP_PROJECT_ID) \
-  	--tag gcr.io/$(GCP_PROJECT_ID)/blog-lampetty-net-redirector:$(IMAGE_TAG)
+  	--tag gcr.io/$(GCP_PROJECT_ID)/server:$(IMAGE_TAG)
