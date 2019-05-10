@@ -1,21 +1,22 @@
 version: 2
+
+env: &env
+  GOOGLE_CLOUD_SDK_VERSION: 244.0.0
+  GOOGLE_CLOUD_SDK_DOWNLOAD_PATH: /google-cloud-sdk
+  GCP_PROJECT_ID: blog-lampetty-net-redirector
+
+gitconfig: &gitconfig
+  name: "Set .gitconfig"
+  command: |
+    echo "" > ~/.gitconfig
+    git config --global url."https://github.com".insteadOf git://github.com
+    git config --global http.https://gopkg.in.followRedirects true
+
 jobs:
-  server:
+  test:
     working_directory: /go/src/github.com/oinume/blog-lampetty-net-redirector
     docker:
-      - image: golang:1.10-stretch
-        environment:
-          MYSQL_ALLOW_EMPTY_PASSWORD: true
-          MYSQL_USER: "root"
-          MYSQL_PASSWORD: "lekcije"
-          MYSQL_HOST: "127.0.0.1"
-          MYSQL_PORT: "3306"
-          MYSQL_DATABASE: "lekcije_test"
-          REDIS_URL: "redis://h:@127.0.0.1:6379"
-          E2E_WEB_DRIVER: "PhantomJS"
-          VERSION_HASH: "_version_"
-          NODE_ENV: "test"
-          LEKCIJE_ENV: "test"
+      - image: golang:1.12-stretch
     steps:
       - checkout
       - run:
@@ -47,16 +48,62 @@ jobs:
           name: "Run test"
           command: |
             make test
-#      - run:
-#          name: "Upload to codecov"
-#          command: |
-#            bash <(curl -s https://codecov.io/bash)
+
+  deploy-image:
+    environment:
+      <<: *env
+    working_directory: /go/src/github.com/oinume/blog-lampetty-net-redirector
+    docker:
+      - image: docker:17.11.0-ce-git
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 17.11.0-ce
+          docker_layer_caching: true
+      - run:
+          <<: *gitconfig
+      - run:
+          name: Install dependency apk packages
+          command: |
+            apk --no-cache add \
+              bash \
+              curl \
+              curl-dev \
+              make \
+              python
+      - restore_cache:
+          key: google-cloud-sdk-244.0.0
+      - run:
+          name: "Install google-cloud-sdk"
+          command: |
+            ./ci/install-google-cloud-sdk.sh
+      - save_cache:
+          key: google-cloud-sdk-244.0.0
+          paths:
+            - /google-cloud-sdk
+      - run:
+          name: "Activate GCP service account"
+          command: |
+            echo $GCP_SERVICE_ACCOUNT_KEY | base64 -d > ./gcp-service-account-key.json
+            gcloud auth activate-service-account --key-file ./gcp-service-account-key.json
+      - run:
+          name: "Deploy docker image to GCR"
+          command: |
+            IMAGE_TAG=$(echo "${CIRCLE_BRANCH}" | tr '._/' '-' | tr '[:upper:]' '[:lower:]')-"${CIRCLE_BUILD_NUM}"
+            echo ${IMAGE_TAG}
+            make gcloud/builds IMAGE_TAG=${IMAGE_TAG}
 
 workflows:
   version: 2
   build-workflow:
     jobs:
-    - server:
-        filters:
-          branches:
-            only: /.*/
+      - test:
+          filters:
+            branches:
+              only: /.*/
+      - deploy-image:
+          requires:
+            - test
+          filters:
+            branches:
+              only: /.*/
