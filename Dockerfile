@@ -2,7 +2,6 @@
 FROM golang:1.12-stretch AS builder
 WORKDIR /go/src/github.com/oinume/blog-lampetty-net-redirector
 COPY . .
-ENV GO111MODULE=on
 RUN make build
 
 # final stage
