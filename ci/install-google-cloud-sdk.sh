@@ -4,16 +4,17 @@ set -e
 
 cat<<EOF
 ============================================================
-Usage: ${0}
-This script installs gcloud command. You can modify gcloud
-version by GOOGLE_CLOUD_SDK_VERSION env var and download
-path by GOOGLE_CLOUD_SDK_DOWNLOAD_PATH env var.
+Usage: ${0} <version> <download_path>
+This script installs gcloud command. You can modify gcloud version with arguments.
 ============================================================
 EOF
 
 
-GOOGLE_CLOUD_SDK_VERSION=${GOOGLE_CLOUD_SDK_VERSION:-206.0.0}
-GOOGLE_CLOUD_SDK_DOWNLOAD_PATH=${GOOGLE_CLOUD_SDK_DOWNLOAD_PATH:-/google-cloud-sdk}
+GOOGLE_CLOUD_SDK_VERSION=${1:-206.0.0}
+GOOGLE_CLOUD_SDK_DOWNLOAD_PATH=${2:-/google-cloud-sdk}
+
+echo "GOOGLE_CLOUD_SDK_VERSION = $GOOGLE_CLOUD_SDK_VERSION"
+echo "GOOGLE_CLOUD_SDK_DOWNLOAD_PATH = $GOOGLE_CLOUD_SDK_DOWNLOAD_PATH"
 
 # Some CI service support cache feature.
 # If there are cache, just use it and skip downloading.
