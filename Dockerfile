@@ -5,10 +5,8 @@ COPY . .
 RUN make build
 
 # final stage
-#FROM gcr.io/distroless/base
 FROM alpine:latest
 RUN apk --no-cache add ca-certificates tzdata
 COPY --from=builder /go/src/github.com/oinume/blog-lampetty-net-redirector/server /bin/server
 ENV PORT=${PORT}
-#ENTRYPOINT [ "/app" ]
 CMD [ "/bin/server" ]
