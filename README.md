@@ -1,3 +1,3 @@
 # blog-lampetty-net-redirector
 
-[![CircleCI](https://circleci.com/gh/oinume/blog-lampetty-net-redirector/tree/master.svg?style=svg)](https://circleci.com/gh/oinume/blog-lampetty-net-redirector/tree/master)
+[![Actions/Build](https://github.com/oinume/blog-lampetty-net-redirector/workflows/ci/badge.svg)](https://github.com/oinume/blog-lampetty-net-redirector/actions?query=workflow%3Aci)
