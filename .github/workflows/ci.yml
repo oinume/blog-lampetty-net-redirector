@@ -19,7 +19,7 @@ jobs:
     name: deploy
     needs: build
     runs-on: ubuntu-latest
-#    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master'
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -38,11 +38,11 @@ jobs:
           echo ${IMAGE_TAG}
           make gcloud/builds IMAGE_TAG=${IMAGE_TAG}
       # Deploy image to Cloud Run
-#      - name: Deploy
-#        run: |
-#          gcloud run deploy "$SERVICE_NAME" \
-#            --quiet \
-#            --region "$RUN_REGION" \
-#            --image "gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA" \
-#            --platform "managed" \
-#            --allow-unauthenticated
+      - name: Deploy
+        run: |
+          gcloud run deploy "$SERVICE_NAME" \
+            --quiet \
+            --region "$RUN_REGION" \
+            --image "gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA" \
+            --platform "managed" \
+            --allow-unauthenticated
