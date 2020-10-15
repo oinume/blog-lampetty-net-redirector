@@ -33,7 +33,8 @@ jobs:
       - name: Build
         run: |
           COMMIT=$(git describe --always --tag)
-          IMAGE_TAG=$(echo "${CIRCLE_BRANCH}" | tr '._/' '-' | tr '[:upper:]' '[:lower:]')-"${COMMIT}"
+          BRANCH=$(basename ${GITHUB_REF})
+          IMAGE_TAG=$(echo "${BRANCH}" | tr '._/' '-' | tr '[:upper:]' '[:lower:]')-"${COMMIT}"
           echo ${IMAGE_TAG}
           make gcloud/builds IMAGE_TAG=${IMAGE_TAG}
       # Deploy image to Cloud Run
