@@ -4,9 +4,7 @@ on:
 jobs:
   build:
     name: build
-    runs-on: ubuntu-20.04
-    env:
-      CACHE_VERSION: 1
+    runs-on: ubuntu-latest
     steps:
       - name: Set up Go 1.15
         uses: actions/setup-go@v1
@@ -17,3 +15,33 @@ jobs:
       - name: Run test
         run: |
           make test
+  deploy:
+    name: deploy
+    needs: build
+    runs-on: ubuntu-latest
+#    if: github.ref == 'refs/heads/master'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      # Setup gcloud CLI
+      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          version: "244.0.0"
+          service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+      # Build and push image to Google Container Registry
+      - name: Build
+        run: |
+          COMMIT=$(git describe --always --tag)
+          IMAGE_TAG=$(echo "${CIRCLE_BRANCH}" | tr '._/' '-' | tr '[:upper:]' '[:lower:]')-"${COMMIT}"
+          echo ${IMAGE_TAG}
+          make gcloud/builds IMAGE_TAG=${IMAGE_TAG}
+      # Deploy image to Cloud Run
+#      - name: Deploy
+#        run: |
+#          gcloud run deploy "$SERVICE_NAME" \
+#            --quiet \
+#            --region "$RUN_REGION" \
+#            --image "gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA" \
+#            --platform "managed" \
+#            --allow-unauthenticated
