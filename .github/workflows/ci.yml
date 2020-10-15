@@ -26,7 +26,7 @@ jobs:
       # Setup gcloud CLI
       - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
-          version: "244.0.0"
+          version: "290.0.1"
           service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
           project_id: ${{ secrets.GCP_PROJECT_ID }}
       # Build and push image to Google Container Registry
@@ -35,14 +35,16 @@ jobs:
           COMMIT=$(git describe --always --tag)
           BRANCH=$(basename ${GITHUB_REF})
           IMAGE_TAG=$(echo "${BRANCH}" | tr '._/' '-' | tr '[:upper:]' '[:lower:]')-"${COMMIT}"
-          echo ${IMAGE_TAG}
+          echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
           make gcloud/builds IMAGE_TAG=${IMAGE_TAG}
       # Deploy image to Cloud Run
       - name: Deploy
         run: |
-          gcloud run deploy "$SERVICE_NAME" \
+          gcloud run deploy server \
             --quiet \
-            --region "$RUN_REGION" \
-            --image "gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA" \
-            --platform "managed" \
+            --region us-central1 \
+            --image "gcr.io/${GCP_PROJECT_ID}/server:${IMAGE_TAG}" \
+            --platform managed \
             --allow-unauthenticated
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
