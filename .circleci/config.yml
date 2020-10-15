@@ -14,7 +14,7 @@ jobs:
   test:
     working_directory: /go/src/github.com/oinume/blog-lampetty-net-redirector
     docker:
-      - image: golang:1.12-stretch
+      - image: golang:1.15-buster
     steps:
       - checkout
       - run:
