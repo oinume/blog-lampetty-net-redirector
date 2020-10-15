@@ -1,5 +1,5 @@
 # build stage
-FROM golang:1.12-stretch AS builder
+FROM golang:1.15-buster AS builder
 WORKDIR /go/src/github.com/oinume/blog-lampetty-net-redirector
 COPY . .
 RUN make build
