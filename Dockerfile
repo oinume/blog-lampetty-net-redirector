@@ -9,4 +9,4 @@ FROM alpine:latest
 RUN apk --no-cache add ca-certificates tzdata
 COPY --from=builder /go/src/github.com/oinume/blog-lampetty-net-redirector/server /bin/server
 ENV PORT=${PORT}
-CMD [ "/bin/server" ]
+ENTRYPOINT [ "/bin/server" ]
